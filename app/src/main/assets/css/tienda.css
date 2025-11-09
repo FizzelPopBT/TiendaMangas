@@ -1,0 +1,311 @@
+/* ----------------------------------------------------- */
+/* 🎨 VARIABLES DE COLOR Y FUENTES */
+/* ----------------------------------------------------- */
+:root {
+  --ff-head: "Bangers", cursive;
+  --ff-body: "Poppins", sans-serif;
+  --color-bg: #0d0d0f;
+  --color-primary: #b88aff;
+  --color-light: #ede5f0;
+  --color-dark: #000;
+}
+
+/* ----------------------------------------------------- */
+/* 🌙 BASE */
+/* ----------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--ff-body);
+  color: white;
+  background-image: url("../img/fondomanga.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ----------------------------------------------------- */
+/* 🔹 HEADER */
+/* ----------------------------------------------------- */
+/* HEADER fijo con transición suave */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 50px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(184, 138, 255, 0.2);
+
+  /* 👇 clave para ocultar/mostrar */
+  transform: translateY(0);
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+/* Oculto al desplazarse hacia abajo */
+.header.hidden {
+  transform: translateY(-110%);
+}
+
+/* Opcional: estilito cuando hay scroll */
+.header.scrolled {
+  background: rgba(0,0,0,0.9);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+
+.logo {
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+.nav a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: white;
+}
+
+/* 🔸 Iconos del header */
+.icons {
+  display: flex;
+  align-items: center;
+}
+
+.icons a {
+  color: white;
+  margin-left: 20px;
+  font-size: 1.4rem;
+  position: relative;
+  transition: 0.3s;
+}
+
+.icons a:hover {
+  color: var(--color-primary);
+}
+
+/* 🔸 Contador del carrito */
+#cart-count {
+  background: var(--color-primary);
+  color: black;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -10px;
+}
+
+/* ----------------------------------------------------- */
+/* 🛍️ PRODUCTOS */
+/* ----------------------------------------------------- */
+.productos {
+  padding: 120px 40px 80px;
+  text-align: center;
+}
+
+.productos h2 {
+  margin-bottom: 40px;
+  color: var(--color-primary);
+  font-family: var(--ff-head);
+  font-size: 2.5rem;
+}
+
+/* 🔹 Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* ✅ más ajustado */
+  gap: 20px; /* ✅ menos separación */
+  justify-content: center;
+  align-items: start;
+  max-width: 1000px; /* ✅ ancho controlado */
+  margin: 0 auto;
+}
+
+/* 🔹 Producto */
+.producto {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(184, 138, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 260px;
+  width: 100%;
+  justify-self: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.producto:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px rgba(184, 138, 255, 0.4);
+}
+
+.producto img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.producto h3 {
+  color: var(--color-light);
+  font-family: var(--ff-head);
+  margin-bottom: 10px;
+}
+
+.producto .precio {
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.add-to-cart {
+  background: var(--color-primary);
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.add-to-cart:hover {
+  background: white;
+  color: var(--color-primary);
+}
+
+/* ----------------------------------------------------- */
+/* 🔍 BARRA DE BÚSQUEDA */
+/* ----------------------------------------------------- */
+.busqueda-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 30px auto 60px;
+  text-align: center;
+}
+
+.busqueda-container input {
+  width: 100%;
+  padding: 12px 45px 12px 20px;
+  border-radius: 25px;
+  border: 1px solid rgba(184, 138, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.busqueda-container input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.busqueda-container input:focus {
+  border-color: var(--color-primary);
+  background: rgba(184, 138, 255, 0.1);
+}
+
+.busqueda-container i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+/* ----------------------------------------------------- */
+/* 💜 ANIMACIONES */
+/* ----------------------------------------------------- */
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+#cart-count.bounce {
+  animation: bounce 0.4s ease;
+}
+
+/* ----------------------------------------------------- */
+/* 📱 RESPONSIVE */
+/* ----------------------------------------------------- */
+@media (max-width: 1024px) {
+  .grid {
+    max-width: 800px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .nav ul {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .producto img {
+    height: 300px;
+  }
+
+  .productos {
+    padding: 100px 20px 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 90%;
+  }
+
+  .producto {
+    max-width: 100%;
+  }
+
+  .producto img {
+    height: 280px;
+  }
+}
+

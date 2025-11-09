@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manga Zone</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    html {
+      scroll-behavior: smooth; 
+    }
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="logo-container">
+    <img src="img/logo1.png" alt="Logo Manga Store" class="logo">
+  </div>
+  
+
+  <nav class="nav">
+    <ul>
+      <li><a href="#">Inicio</a></li>
+      <li><a href="tienda.html">Tienda</a></li>
+      <li><a href="#">Novedades</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <div class="icons">
+    <a href="#"><i class="fas fa-search"></i></a>
+    <a href="carrito.html"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
+    <a href="#" id="userIcon"><i class="fas fa-user"></i></a>
+    
+  </div>
+</header>
+
+  <main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Descubre tu próximo manga favorito</h1>
+      <p>Las mejores historias, directo desde Japón a tu colección.</p>
+      <a href="tienda.html" class="btn">Ver Tienda</a>
+    </div>
+  </section>
+
+  <section class="banner-evento">
+  <div class="banner-contenido">
+    <h2>¡Nuevo tomo de <span>Chainsawman</span> disponible!</h2>
+    <p>Consíguelo antes de que se agote — edición limitada exclusiva 🩸</p>
+    <a href="#tienda" class="btn-banner">Ver producto</a>
+  </div>
+</section>
+
+  <!-- Categorías -->
+  <section class="categorias">
+    <h2>Categorías Populares</h2>
+    <div class="cards">
+      <div class="card">Shonen</div>
+      <div class="card">Shojo</div>
+      <div class="card">Seinen</div>
+      <div class="card">Ediciones Limitadas</div>
+    </div>
+  </section>
+
+  <!-- Productos -->
+  <section class="productos">
+    <h2>Últimos Lanzamientos</h2>
+    <div class="grid">
+      <!-- Aquí van las tarjetas de productos -->
+    </div>
+  </section>
+
+  <!-- Promociones -->
+  <section class="promo">
+    <h2>🔥 Ofertas de la Semana 🔥</h2>
+    <p>Hasta 30% de descuento en colecciones seleccionadas.</p>
+  </section>
+
+  <!-- Sobre -->
+    <section class="sobre-nosotros">
+        <h2>Sobre Nosotros</h2>
+        <p>En Manga Zone, somos apasionados del manga y el anime. Nuestra misión es traer las mejores historias directamente a tus manos, ofreciendo una amplia selección de títulos para todos los gustos.</p>
+        
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const banner = document.querySelector('.banner-evento');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          banner.classList.add('visible');
+          observer.unobserve(banner); // Solo se anima una vez
+        }
+      });
+    }, { threshold: 0.3 }); // 0.3 = cuando el 30% del banner esté visible
+
+    observer.observe(banner);
+  });
+</script>
+<script src="js/sesion.js"></script>
+<script src="js/index.js"></script>
+        
+</body>

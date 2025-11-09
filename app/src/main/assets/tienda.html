@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda - Manga Store</title>
+  <link rel="stylesheet" href="css/tienda.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo-container">
+      <img src="img/logo1.png" alt="Logo Manga Store" class="logo">
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="../../../../../../OneDrive/Documentos/Tiendamanga-main/index.html">Inicio</a></li>
+        <li><a href="tienda.html">Tienda</a></li>
+        <li><a href="#">Novedades</a></li>
+      </ul>
+    </nav>
+    <div class="icons">
+      <a href="carrito.html"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
+    </div>
+  </header>
+
+  <!-- ✅ SOLO UN MAIN -->
+  <main class="productos" style="margin-top:120px;">
+    <h2>Catálogo de Productos</h2>
+
+    <!-- 🔹 Barra de búsqueda -->
+    <div class="busqueda-container">
+      <input
+        type="text"
+        id="busqueda"
+        placeholder="Buscar manga por nombre o categoría..."
+      >
+      <i class="fas fa-search"></i>
+    </div>
+
+    <!-- 🔹 Contenedor de productos -->
+    <div class="grid" id="contenedor-productos"></div>
+  </main>
+
+  <!-- ✅ Scripts al final del body -->
+  <script src="js/carrito.js"></script>
+  <script src="js/tienda.js"></script>
+  <script src="js/scrollHeader.js"></script>
+</body>
+</html>
