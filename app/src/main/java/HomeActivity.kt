@@ -1,10 +1,11 @@
 package com.example.tiendamanga
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.view.Gravity
+import android.widget.*
 import androidx.activity.ComponentActivity
 
 class HomeActivity : ComponentActivity() {
@@ -12,56 +13,89 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Layout vertical simple
+        // Colores
+        val bgColor = Color.parseColor("#0E0B12")
+        val accent = Color.parseColor("#B97AFF")
+        val textMain = Color.WHITE
+
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            val p = (48 * resources.displayMetrics.density).toInt()
+            gravity = Gravity.CENTER_HORIZONTAL
+            setBackgroundColor(bgColor)
+            val p = (40 * resources.displayMetrics.density).toInt()
             setPadding(p, p, p, p)
         }
 
-        // Título
+        // Logo
+        val logo = ImageView(this).apply {
+            setImageResource(R.drawable.logo)
+            val size = (100 * resources.displayMetrics.density).toInt()
+            layoutParams = LinearLayout.LayoutParams(size, size)
+        }
+
+        // Título principal
         val title = TextView(this).apply {
-            text = "Bienvenido a TiendaManga"
-            textSize = 20f
+            text = "MangaZone Admin"
+            textSize = 26f
+            setTextColor(accent)
+            setTypeface(null, Typeface.BOLD)
+            gravity = Gravity.CENTER
+        }
+
+        // Función para crear botones uniformes
+        fun createButton(texto: String, icon: String = ""): Button {
+            val btn = Button(this)
+            btn.text = "$icon $texto"
+            btn.setTextColor(Color.WHITE)
+            btn.textSize = 18f
+            btn.setBackgroundColor(accent)
+            btn.setAllCaps(false)
+            btn.background = resources.getDrawable(android.R.drawable.btn_default, theme).apply {
+                btn.setBackgroundColor(accent)
+            }
+            btn.setPadding(20, 20, 20, 20)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 16, 0, 16)
+            }
+            btn.layoutParams = params
+            return btn
         }
 
         // Botones
-        val btnTienda = Button(this).apply { text = "Ver tienda" }
-        val btnCamara = Button(this).apply { text = "Abrir cámara" }
-        val btnApi = Button(this).apply { text = "Ver API productos" }
-        val btnLogout = Button(this).apply { text = "Cerrar sesión" }
+        val btnTienda = createButton("Ver tienda")
+        val btnCamara = createButton("Abrir cámara")
+        val btnApi = createButton("Ver productos")
+        val btnTiendas = createButton("Ver tiendas")
+        val btnLogout = createButton("Cerrar sesión")
 
-        // Agregar al layout
+        // Agregar vistas
+        layout.addView(logo)
+        layout.addView(Space(this).apply { minimumHeight = 20 })
         layout.addView(title)
+        layout.addView(Space(this).apply { minimumHeight = 40 })
         layout.addView(btnTienda)
         layout.addView(btnCamara)
         layout.addView(btnApi)
+        layout.addView(btnTiendas)
         layout.addView(btnLogout)
 
         setContentView(layout)
 
-        // Acciones de los botones
-        btnTienda.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
-        btnCamara.setOnClickListener {
-            startActivity(Intent(this, CameraActivity::class.java))
-        }
-
-        btnApi.setOnClickListener {
-            startActivity(Intent(this, ApiActivity::class.java))
-        }
-
+        // ⚙Acciones
+        btnTienda.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
+        btnCamara.setOnClickListener { startActivity(Intent(this, CameraActivity::class.java)) }
+        btnApi.setOnClickListener { startActivity(Intent(this, ApiActivity::class.java)) }
+        btnTiendas.setOnClickListener { startActivity(Intent(this, StoresActivity::class.java)) }
         btnLogout.setOnClickListener {
-            // Borra sesión y vuelve al login
             getSharedPreferences("tiendamanga", MODE_PRIVATE)
                 .edit().putBoolean("logged_in", false).apply()
-            val i = Intent(this, LoginActivity::class.java)
-            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(i)
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
 }
+
 
