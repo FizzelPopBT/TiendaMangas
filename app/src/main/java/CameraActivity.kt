@@ -1,7 +1,9 @@
 package com.example.tiendamanga
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -11,25 +13,34 @@ import android.view.Gravity
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 
 class CameraActivity : ComponentActivity() {
 
-    private val prefs by lazy { getSharedPreferences("tiendamanga", MODE_PRIVATE) }
     private var pendingUri: Uri? = null
 
-    private lateinit var grid: GridView
-    private lateinit var adapter: ArrayAdapter<String>
+    // Lanzadores
+    private val requestPermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grantResults ->
+        val granted = grantResults.values.all { it == true }
+        if (granted) {
+            Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
+            capturePhoto()
+        } else {
+            Toast.makeText(this, "Permisos denegados", Toast.LENGTH_LONG).show()
+        }
+    }
 
     private val takePicture = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success && pendingUri != null) {
-            val u = pendingUri!!.toString()
-            addUri(u)
-            Toast.makeText(this, "Foto guardada", Toast.LENGTH_SHORT).show()
-            refreshGrid()
+        if (success) {
+            Toast.makeText(this, "Foto guardada en la galería", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Captura cancelada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Captura cancelada o fallida", Toast.LENGTH_SHORT).show()
+            // Limpia el URI si no se usó
+            pendingUri?.let { contentResolver.delete(it, null, null) }
         }
         pendingUri = null
     }
@@ -37,106 +48,58 @@ class CameraActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Paleta MangaZone
+        // UI muy simple para probar
         val bg = Color.parseColor("#0E0B12")
         val accent = Color.parseColor("#B97AFF")
-        val textMain = Color.WHITE
-        val soft = Color.parseColor("#BEBEBE")
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(bg)
-            val p = (20 * resources.displayMetrics.density).toInt()
+            val p = (24 * resources.displayMetrics.density).toInt()
             setPadding(p, p, p, p)
         }
-
         val title = TextView(this).apply {
-            text = "Cámara — TiendaManga"
+            text = "Cámara — prueba"
             setTextColor(accent)
-            textSize = 22f
+            textSize = 20f
             gravity = Gravity.CENTER_HORIZONTAL
         }
-
-        val row = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_HORIZONTAL
-        }
-
-        val btnTake = Button(this).apply {
-            text = "Tomar foto"
-            setTextColor(Color.WHITE)
+        val btn = Button(this).apply {
+            text = "Abrir cámara"
             setBackgroundColor(accent)
-            setOnClickListener { capturePhoto() }
-        }
-
-        val space = Space(this).apply { minimumWidth = (12 * resources.displayMetrics.density).toInt() }
-
-        val btnShareLast = Button(this).apply {
-            text = "Compartir última"
             setTextColor(Color.WHITE)
-            setBackgroundColor(accent)
-            setOnClickListener { shareLast() }
-        }
-
-        val btnClear = Button(this).apply {
-            text = "Limpiar lista (app)"
-            setTextColor(soft)
-            setBackgroundColor(Color.TRANSPARENT)
-            setOnClickListener {
-                saveUris(emptyList())
-                refreshGrid()
-                Toast.makeText(this@CameraActivity, "Lista interna borrada", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        grid = GridView(this).apply {
-            numColumns = 3
-            verticalSpacing = (8 * resources.displayMetrics.density).toInt()
-            horizontalSpacing = (8 * resources.displayMetrics.density).toInt()
-            stretchMode = GridView.STRETCH_COLUMN_WIDTH
-        }
-
-        adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, loadUris()) {
-            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup): android.view.View {
-                val image = ImageView(this@CameraActivity)
-                val size = parent.width / 3 - (8 * resources.displayMetrics.density).toInt()
-                image.layoutParams = AbsListView.LayoutParams(size, size)
-                image.scaleType = ImageView.ScaleType.CENTER_CROP
-                image.setImageURI(Uri.parse(getItem(position)))
-                return image
-            }
-        }
-        grid.adapter = adapter
-
-        grid.setOnItemClickListener { _, _, pos, _ ->
-            val uri = Uri.parse(adapter.getItem(pos))
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "image/*")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(intent)
+            setOnClickListener { ensureAndOpenCamera() }
         }
 
         root.addView(title)
-        val topSpace = Space(this).apply { minimumHeight = (12 * resources.displayMetrics.density).toInt() }
-        root.addView(topSpace)
-
-        row.addView(btnTake)
-        row.addView(space)
-        row.addView(btnShareLast)
-        root.addView(row)
-
-        val midSpace = Space(this).apply { minimumHeight = (8 * resources.displayMetrics.density).toInt() }
-        root.addView(midSpace)
-
-        root.addView(btnClear)
-        val spacer = Space(this).apply { minimumHeight = (8 * resources.displayMetrics.density).toInt() }
-        root.addView(spacer)
-
-        root.addView(grid)
+        root.addView(Space(this).apply { minimumHeight = 16 })
+        root.addView(btn)
+        root.addView(Space(this).apply { minimumHeight = 8 })
         setContentView(root)
+    }
 
-        refreshGrid()
+    private fun ensureAndOpenCamera() {
+        // 1) ¿tiene cámara?
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            Toast.makeText(this, "Este dispositivo no tiene cámara disponible", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // 2) Permisos en runtime si hacen falta
+        val needsWrite = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P // <= Android 9
+        val needed = mutableListOf(Manifest.permission.CAMERA)
+        if (needsWrite) needed += Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+        val missing = needed.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty()) {
+            requestPermissions.launch(missing.toTypedArray())
+            return
+        }
+
+        // 3) Capturar
+        capturePhoto()
     }
 
     private fun capturePhoto() {
@@ -154,49 +117,25 @@ class CameraActivity : ComponentActivity() {
             else
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-        pendingUri = contentResolver.insert(collection, values)
-        if (pendingUri == null) {
-            Toast.makeText(this, "No se pudo crear el archivo", Toast.LENGTH_LONG).show()
+        val uri = contentResolver.insert(collection, values)
+        if (uri == null) {
+            Toast.makeText(this, "No pude crear el archivo en la galería", Toast.LENGTH_LONG).show()
+            // Fallback: intenta abrir la cámara sin URI (devuelve thumbnail)
+            openBasicCameraFallback()
             return
         }
-        takePicture.launch(pendingUri)
+        pendingUri = uri
+        takePicture.launch(uri)
     }
 
-    private fun shareLast() {
-        val list = loadUris()
-        if (list.isEmpty()) {
-            Toast.makeText(this, "Aún no tienes fotos", Toast.LENGTH_SHORT).show()
+    private fun openBasicCameraFallback() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(packageManager) == null) {
+            Toast.makeText(this, "No hay app de cámara disponible", Toast.LENGTH_LONG).show()
             return
         }
-        val uri = Uri.parse(list.last())
-        val share = Intent(Intent.ACTION_SEND).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        startActivity(Intent.createChooser(share, "Compartir foto"))
-    }
-
-    private fun loadUris(): MutableList<String> {
-        val str = prefs.getString("fotos_uris", "") ?: ""
-        if (str.isBlank()) return mutableListOf()
-        return str.split("|").filter { it.isNotBlank() }.toMutableList()
-    }
-
-    private fun saveUris(list: List<String>) {
-        prefs.edit().putString("fotos_uris", list.joinToString("|")).apply()
-    }
-
-    private fun addUri(u: String) {
-        val list = loadUris()
-        list.add(u)
-        saveUris(list)
-    }
-
-    private fun refreshGrid() {
-        adapter.clear()
-        adapter.addAll(loadUris())
-        adapter.notifyDataSetChanged()
+        startActivity(intent) // solo para comprobar que la cámara abre
     }
 }
+
 
