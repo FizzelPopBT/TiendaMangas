@@ -65,7 +65,7 @@ class HomeActivity : ComponentActivity() {
         }
 
         // Botones
-        val btnTienda = createButton("Ver tienda")
+        val btnTienda = createButton("Ver tienda Web")
         val btnCamara = createButton("Abrir cámara")
         val btnApi = createButton("Ver productos")
         val btnTiendas = createButton("Ver tiendas")
